@@ -20,6 +20,9 @@ sun_radius = 80
 moon_radius = 55
 sun_color = (255,249,78)
 moon_color = (245,242,225)
+moon_crate_color = (222,222,198)
+shadowing_color = (79,76,70)
+
 
 while running:
     time += 1
@@ -30,21 +33,26 @@ while running:
         if event.type == pygame.QUIT:
             running = False 
         
-    
     temp = 180 - min((time+90) % 360,360-((time+90)%360)) #the difference from moon
+
+    #sky color change
     sky_color = (int(math.cos(temp/180*math.pi) * (82)+94),int((math.cos(temp/180*math.pi) *  (100.5))+109.5),int((math.cos(temp/180*math.pi) *  (113.5))+123.5))
     screen.fill(sky_color)
+
     pygame.draw.circle(screen,sun_color,(int(600-510*math.cos(time/180*math.pi)),int(600-510*math.sin(time/180*math.pi))),sun_radius)#sun
+
     #moon
     moon_x,moon_y = int(600+510*math.cos(time/180*math.pi)),int(600+510*math.sin(time/180*math.pi))
     pygame.draw.circle(screen,moon_color,(moon_x,moon_y),moon_radius)
-    pygame.draw.circle(screen,(222,222,198),(moon_x+20,moon_y+12),21)
-    pygame.draw.circle(screen,(222,222,198),(moon_x-25,moon_y-3),15)
-    pygame.draw.circle(screen,(222,222,198),(moon_x+14,moon_y-22),16)
-    pygame.draw.circle(screen,(222,222,198),(moon_x-3,moon_y+34),10)
+    pygame.draw.circle(screen,moon_crate_color,(moon_x+20,moon_y+12),21)
+    pygame.draw.circle(screen,moon_crate_color,(moon_x-25,moon_y-3),15)
+    pygame.draw.circle(screen,moon_crate_color,(moon_x+14,moon_y-22),16)
+    pygame.draw.circle(screen,moon_crate_color,(moon_x-3,moon_y+34),10)
 
     pygame.draw.rect(screen, (155,118,83),(0,600,1200,200))#land
     pygame.draw.rect(screen, (43,45,66),(500,200,200,400))#building
+    pygame.draw.polygon(screen,(164,74,74),[(500,200),(700,200),(600,120)])
+
     #clock
     pygame.draw.circle(screen, (192,192,192),(600,300),75)
     pygame.draw.rect(screen, (0,0,0),(597,225,6,12))
@@ -54,6 +62,7 @@ while running:
     pygame.draw.line(screen, (0,0,0),(600,300),(600+70*math.sin(24*time/180*math.pi),300-70*math.cos(24*time/180*math.pi)),2)
     pygame.draw.line(screen, (0,0,0),(600,300),(600-50*math.sin(2*time/180*math.pi),300+50*math.cos(2*time/180*math.pi)),5)
     pygame.draw.circle(screen, (184,115,51),(600,300),4)
+
     #windows
     coordinate_list = [(520,400,70,80),(520,505,70,80),(610,400,70,80),(610,505,70,80)]
     if(time % 360 <= 180):
@@ -71,9 +80,15 @@ while running:
     pygame.draw.circle(screen,cloud_color,(cloud_x+57,cloud_y-17),40)
 
     #shadowing
-    shadowing_color = (79,76,70)
+
     if(time%360 >= 15 and time%360 <= 165):
-        pygame.draw.polygon(screen,shadowing_color,[(500,600),(700,600),(700+150*math.tan((90-time)/180*math.pi),750),(500+150*math.tan((90-time)/180*math.pi),750)])
+        coordinate_list = [(500,600),
+                           (700,600),
+                           (700+150*math.tan((90-time)/180*math.pi),750),
+                           (600+180*math.tan((90-time)/180*math.pi),780),
+                           (500+150*math.tan((90-time)/180*math.pi),750)]
+        
+        pygame.draw.polygon(screen,shadowing_color,coordinate_list)
     
 
     pygame.display.flip()
